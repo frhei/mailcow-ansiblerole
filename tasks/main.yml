@@ -81,3 +81,21 @@
   when:
     - mailcow_running.exists
     - mailcow__install_updates
+
+- name: copy backup script to server
+  become: true
+  template:
+    src: backup.sh
+    dest: "{{ backup_scripts_dir }}/mailcow_backup.sh"
+    owner: root
+    group: root
+    mode: '0700'
+
+- name: schedule mailcow backup job
+  become: true
+  cron:
+    name: "mailcow backup"
+    minute: "00"
+    hour: "05"
+    user: root
+    job: "{{ backup_scripts_dir }}/mailcow_backup.sh > {{ backup_log_dir }}/mailcow_backup-$(date +\\%Y-\\%m-\\%d).log 2>&1"
