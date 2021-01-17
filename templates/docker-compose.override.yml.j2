@@ -1,0 +1,94 @@
+version: '2.1'
+
+services:
+    nginx-mailcow:
+      networks:
+        # add Traefik's network
+        web:
+      labels:
+        - traefik.enable=true
+        - traefik.docker.network={{ traefik_network_name }}
+        - traefik.http.routers.moo.rule=Host(`${MAILCOW_HOSTNAME}`)
+        - traefik.http.routers.moo.tls=true
+        - traefik.http.routers.moo.tls.certresolver=letsencrypt
+        - traefik.http.routers.moo.entrypoints=web_https
+        - traefik.http.routers.moo.middlewares=secHeaders@file
+        - traefik.http.services.moo.loadbalancer.server.port=8080
+        # moo-admin
+        # - traefik.http.routers.mooadmin.rule=Host(`${MAILCOW_HOSTNAME}`) && PathPrefix(`/admin`)
+        # - traefik.http.routers.mooadmin.tls=true
+        # - traefik.http.routers.mooadmin.tls.certresolver=letsencrypt
+        # - traefik.http.routers.mooadmin.entrypoints=web_https
+        # - traefik.http.routers.mooadmin.middlewares=secHeaders@file,mooadmin@docker
+        # - traefik.http.middlewares.mooadmin.replacepathregex.regex=^/admin/(.*)
+        # - traefik.http.middlewares.mooadmin.replacepathregex.replacement=/$${1}
+        # - traefik.http.services.mooadmin.loadbalancer.server.port=8080
+        # moo-sogo
+        # - traefik.http.routers.moo-sogo.rule=Host(`${MAILCOW_HOSTNAME}`)
+        # - traefik.http.routers.moo-sogo.tls=true
+        # - traefik.http.routers.moo-sogo.tls.certresolver=letsencrypt
+        # - traefik.http.routers.moo-sogo.entrypoints=web_https
+        # - traefik.http.routers.moo-sogo.middlewares=secHeaders@file,moo-sogo
+        # - traefik.http.middlewares.moo-sogo.addprefix.prefix=/SOGo
+        # - traefik.http.services.moo-sogo.loadbalancer.server.port=8080
+
+    certdumper:
+        image: humenius/traefik-certs-dumper
+        container_name: traefik_certdumper
+        network_mode: none
+        volumes:
+          # mount the folder which contains Traefik's `acme.json' file
+          #   in this case Traefik is started from its own docker-compose in ../traefik
+          - /etc/traefik/letsencrypt:/traefik:ro
+          # mount mailcow's SSL folder
+          - ./data/assets/ssl/:/output:rw
+        environment:
+          # only change this, if you're using another domain for mailcow's web frontend compared to the standard config
+          - DOMAIN=${MAILCOW_HOSTNAME}
+
+    # postfix-mailcow:
+    #   networks:
+    #     web:
+    #       - {{ traefik_network_name }}
+    #   labels:
+    #     - traefik.enable=true
+    #     - traefik.docker.network={{ traefik_network_name }}
+    #     - traefik.tcp.routers.moo-imap.rule=HostSNI(`${MAILCOW_HOSTNAME}`)
+    #     - traefik.tcp.routers.moo-imap.entrypoints=imap
+    #     - traefik.tcp.routers.moo-imap.tls=true
+    #     - traefik.tcp.routers.moo-imap.tls.passthrough=true
+    #     - traefik.tcp.services.moo-imap.loadbalancer.server.port=imap
+    #     - traefik.tcp.routers.moo-pop3.rule=HostSNI(`${MAILCOW_HOSTNAME}`)
+    #     - traefik.tcp.routers.moo-pop3.entrypoints=pop3
+    #     - traefik.tcp.routers.moo-pop3.tls=true
+    #     - traefik.tcp.routers.moo-pop3.tls.passthrough=true
+    #     - traefik.tcp.services.moo-pop3.loadbalancer.server.port=pop3
+    #   ports:
+    #     - "143"
+    #     - "993"
+    #     - "110"
+    #     - "995"
+
+    # dovecot-mailcow:
+    #   networks:
+    #     web:
+    #       - "{{ traefik_network_name }}"
+    #   labels:
+    #     - traefik.enable=true
+    #     - traefik.docker.network={{ traefik_network_name }}
+    #     - traefik.tcp.routers.moo-smtp.rule=HostSNI(`${MAILCOW_HOSTNAME}`)
+    #     - traefik.tcp.routers.moo-smtp.entrypoints=smtp
+    #     - traefik.tcp.routers.moo-smtp.tls=true
+    #     - traefik.tcp.routers.moo-smtp.tls.passthrough=true
+    #     - traefik.tcp.services.moo-smtp.loadbalancer.server.port=smtp
+    #   ports:
+    #     - "25"
+    #     - "465"
+    #     - "587"
+
+
+
+networks:
+  web:
+    external:
+      name: {{ traefik_network_name }}

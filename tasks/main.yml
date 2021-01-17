@@ -48,6 +48,12 @@
   become: yes
   import_tasks: nginx.yml
 
+- name: Copy docker-compose.override.yml
+  become: yes
+  template:
+    src: docker-compose.override.yml.j2
+    dest: "{{ mailcow__install_path }}/docker-compose.override.yml"
+
 - name: Copy vars.local.inc.php
   become: yes
   template:
