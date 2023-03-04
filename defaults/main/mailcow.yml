@@ -5,9 +5,9 @@
 # -------------
 
 mailcow__config_http_port: 80
-mailcow__config_http_bind: 0.0.0.0
+mailcow__config_http_bind:
 mailcow__config_https_port: 443
-mailcow__config_https_bind: 0.0.0.0
+mailcow__config_https_bind:
 
 
 # Set this to "allow" to enable the anyone pseudo user. Disabled by default.
@@ -37,8 +37,24 @@ mailcow__config_maildir_gc_time: 1440
 #
 mailcow__config_additional_san: []
 
+# Additional server names for mailcow UI
+#
+# Specify alternative addresses for the mailcow UI to respond to
+# This is useful when you set mail.* as ADDITIONAL_SAN and want to make sure mail.maildomain.com will always point to the mailcow UI.
+# If the server name does not match a known site, Nginx decides by best-guess and may redirect users to the wrong web root.
+# You can understand this as server_name directive in Nginx.
+# Comma separated list without spaces! Example: ADDITIONAL_SERVER_NAMES=a.b.c,d.e.f
+mailcow__config_additional_server_names: []
+
 # Skip running ACME (acme-mailcow, Let's Encrypt certs) - y/n
 mailcow__config_skip_lets_encrypt: n
+
+# Let's Encrypt registration contact information
+# Optional: Leave empty for none
+# This value is only used on first order!
+# Setting it at a later point will require the following steps:
+# https://mailcow.github.io/mailcow-dockerized-docs/troubleshooting/debug-reset_tls/
+mailcow__config_acme_contact: ""
 
 # Create seperate certificates for all domains - y/n
 # this will allow adding more than 100 domains, but some email clients will not be able to connect with alternative hostnames
@@ -67,14 +83,19 @@ mailcow__config_skip_sogo: n
 # Allow admins to log into SOGo as email user (without any password)
 mailcow__config_allow_admin_email_login: n
 
-# Enable watchdog (watchdog-mailcow) to restart unhealthy containers (experimental)
+# Enable watchdog (watchdog-mailcow) to restart unhealthy containers
 mailcow__config_use_watchdog: n
-# Send notifications by mail (no DKIM signature, sent from watchdog@MAILCOW_HOSTNAME)
-# Can by multiple rcpts, NO quotation marks
-#WATCHDOG_NOTIFY_EMAIL=a@example.com,b@example.com,c@example.com
+# Send watchdog notifications by mail (sent from watchdog@MAILCOW_HOSTNAME)
+# CAUTION:
+# 1. You should use external recipients
+# 2. Mails are sent unsigned (no DKIM)
+# 3. If you use DMARC, create a separate DMARC policy ("v=DMARC1; p=none;" in _dmarc.MAILCOW_HOSTNAME)
+# Multiple rcpts allowed, NO quotation marks, NO spaces
 mailcow__config_watchdog_notify_email:
 # Notify about banned IP (includes whois lookup)
 mailcow__config_watchdog_notify_ban: y
+# Subject for watchdog mails. Defaults to "Watchdog ALERT" followed by the error message.
+mailcow__config_watchdog_subject:
 
 # Checks if mailcow is an open relay. Requires a SAL. More checks will follow.
 # https://www.servercow.de/mailcow?lang=en

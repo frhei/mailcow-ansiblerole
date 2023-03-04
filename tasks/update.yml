@@ -1,4 +1,5 @@
 ---
+
 - name: Copy updater script
   become: yes
   template:
@@ -18,6 +19,7 @@
   args:
     executable: /bin/bash
   register: mailcow_update
+  changed_when: 'not "No updates are available" in mailcow_update.stdout'
   tags:
     - skip_ansible_lint
 
@@ -31,3 +33,4 @@
     content: "{{ mailcow_update.stdout }}"
     dest: "/var/log/mailcow-update/update-{{ ansible_date_time.iso8601_basic_short }}.log"
   no_log: True
+  when: 'not "No updates are available" in mailcow_update.stdout'
