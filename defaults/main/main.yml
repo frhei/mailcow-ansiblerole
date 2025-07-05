@@ -3,6 +3,7 @@
 mailcow__hostname: "{{ inventory_hostname }}"
 
 mailcow__install_path: "/opt/mailcow-dockerized"
+mailcow__git_repo: 'https://github.com/mailcow/mailcow-dockerized.git'
 mailcow__git_version: master
 
 mailcow__timezone: Europe/Berlin
@@ -17,8 +18,6 @@ mailcow__docker_compose_project_name: mailcowdockerized
 mailcow__theme: lumen
 
 mailcow__install_updates: yes
-
-mailcow__redirect_http_to_https: no
 
 mailcow__rspamd_clamd_servers: clamd:3310
 

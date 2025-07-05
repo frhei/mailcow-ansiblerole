@@ -12,6 +12,16 @@
     - WATCHDOG_SUBJECT
     - ACME_CONTACT
 
+- name: Warn if mailcow__redirect_http_to_https is used
+  debug:
+    msg: "WARNING: The variable 'mailcow__redirect_http_to_https' is depcrecated and will be removed soon. Please use 'mailcow__config_http_redirect' instead."
+  when: mailcow__redirect_http_to_https is defined
+
+- name: "Set deprecated variable mailcow__redirect_http_to_https to mailcow__config_http_redirect"
+  set_fact: 
+    mailcow__config_http_redirect: "{{ 'y' if mailcow__redirect_http_to_https | default(false) else 'n' }}"
+  when: mailcow__redirect_http_to_https is defined
+
 - name: "Configure mailcow.conf"
   become: yes
   replace:
@@ -46,10 +56,6 @@
       value: "{{ mailcow__config_skip_http_verification }}"
     - variable: SKIP_CLAMD
       value: "{{ mailcow__config_skip_clamd }}"
-    - variable: SKIP_SOLR
-      value: "{{ mailcow__config_skip_solr }}"
-    - variable: SOLR_HEAP
-      value: "{{ mailcow__config_solr_heap }}"
     - variable: SKIP_SOGO
       value: "{{ mailcow__config_skip_sogo }}"
     - variable: ALLOW_ADMIN_EMAIL_LOGIN
@@ -72,3 +78,11 @@
       value: "{{ mailcow__docker_compose_project_name }}"
     - variable: ACME_CONTACT
       value: "{{ mailcow__config_acme_contact }}"
+    - variable: FTS_HEAP
+      value: "{{ mailcow__config_fts_heap }}"
+    - variable: FTS_PROCS
+      value: "{{ mailcow__config_fts_procs }}"
+    - variable: SKIP_FTS
+      value: "{{ mailcow__config_skip_fts }}"
+    - variable: HTTP_REDIRECT
+      value: "{{ mailcow__config_http_redirect }}"

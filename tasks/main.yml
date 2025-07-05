@@ -15,7 +15,7 @@
 - name: Clone mailcow git repo
   become: yes
   git:
-    repo: 'https://github.com/mailcow/mailcow-dockerized.git'
+    repo: "{{ mailcow__git_repo }}"
     version: "{{ mailcow__git_version }}"
     umask: '022'
     update: false
@@ -23,7 +23,9 @@
   when: not mailcow_installed.stat.exists
 
 - name: Generate mailcow.conf file
-  shell: ./generate_config.sh
+  shell: |
+    umask 0022
+    ./generate_config.sh
   environment:
     MAILCOW_HOSTNAME: "{{ mailcow__hostname }}"
     MAILCOW_TZ: "{{ mailcow__timezone }}"
@@ -41,7 +43,7 @@
 - name: Configure Rspamd
   import_tasks: rspamd.yml
 
-- name: Template settings for Nginx
+- name: Migrate NGINX Redirect
   import_tasks: nginx.yml
 
 - name: Copy docker-compose.override.yml
