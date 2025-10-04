@@ -8,7 +8,7 @@ services:
       labels:
         - traefik.enable=true
         - traefik.docker.network={{ traefik_network_name }}
-        - traefik.http.routers.moo.rule=Host(`${MAILCOW_HOSTNAME}`)
+        - traefik.http.routers.moo.rule=Host(`${MAILCOW_HOSTNAME}`, `{{ autodiscover_subdomain }}.{{ domain_name }}`, `{{ autoconfig_subdomain }}.{{ domain_name}}`, `{{ autodiscover_subdomain }}.{{ alternative_domain_name }}`, `{{ autoconfig_subdomain }}.{{ alternative_domain_name}}`)
         - traefik.http.routers.moo.tls=true
         - traefik.http.routers.moo.tls.certresolver=letsencrypt
         - traefik.http.routers.moo.entrypoints=web_https
