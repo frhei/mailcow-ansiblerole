@@ -36,7 +36,7 @@ This role will use by default the `inventory_hostname` as mailcow hostname, this
 |     `mailcow__config_additional_san`      |                     sets ADDITIONAL_SAN in mailcow.conf                     |                                                     |                      needs to be a list                       |
 | `mailcow__config_additional_server_names` |                sets ADDITIONAL_SERVER_NAMES in mailcow.conf                 |                                                     |                      needs to be a list                       |
 |    `mailcow__config_skip_lets_encrypt`    |                   sets SKIP_LETS_ENCRYPT in mailcow.conf                    |                                                     |                                                               |
-|     `mailcow__config_enable_ssl_sni`      |                     sets ENABLE_SSL_SNI in mailcow.conf                     |                                                     |                                                               |
+|     `mailcow__config_enable_ssl_sni`      |                     sets ENABLE_SSL_SNI in mailcow.conf                     |                         `y`                         |                                                               |
 |      `mailcow__config_skip_ip_check`      |                     sets SKIP_IP_CHECK in mailcow.conf                      |                                                     |                                                               |
 | `mailcow__config_skip_http_verification`  |                 sets SKIP_HTTP_VERIFICATION in mailcow.conf                 |                         `n`                         |                                                               |
 |       `mailcow__config_skip_clamd`        |                       sets SKIP_CLAMD in mailcow.conf                       |                         `n`                         |                                                               |
@@ -53,14 +53,13 @@ This role will use by default the `inventory_hostname` as mailcow hostname, this
 |        `mailcow__config_log_lines`        |                       sets LOG_LINES in mailcow.conf                        |                       `9999`                        |                                                               |
 |   `mailcow__config_sogo_expire_session`   |                  sets SOGO_EXPIRE_SESSION in mailcow.conf                   |                        `480`                        |                                                               |
 |        `mailcow__install_updates`         | if `yes` the mailcow ansible role will also update an existing installation |                        `yes`                        |                                                               |
-|      `mailcow__config_acme_contact`       |                      sets ACME_CONTACT in mailcow.conf                      |                                                     |                                                               |
 |      `mailcow__rspamd_clamd_servers`      |                 configures the clamd server used by rspamd                  |                    `clamd:3310`                     |                                                               |
 |     `mailcow__rspamd_clamd_patterns`      |    configures custom clamd rspamd patterns inside rspamd antivirus.conf     |                                                     |             needs to be a list  of name and regex             |
 |        `mailcow__compose_command`         |               configures the command that is used for compose               |                  `docker compose`                   | set to `docker-compose` for the standalone version of compose |
+|       `mailcow__config_enable_ipv6`       |                      sets ENABLE_IPV6 in mailcow.conf                       |                       `true`                        |   Enables IPv6 support in mailcow, can be `true` or `false`   |
 
-
-> [!CAUTION]  
-> The Variable `mailcow__redirect_http_to_https` is **deprecated** but still accepted and will be removed on a later date. Please use the replacement: `mailcow__config_http_redirect` instead.
+> [!WARNING]
+> Please take close attention to the variable `mailcow__config_enable_ipv6` as this value is a boolean instead of a string.
 
 ## Usage
 
